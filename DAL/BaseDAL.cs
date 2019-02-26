@@ -9,12 +9,15 @@ using System.Linq.Expressions;
 
 namespace DAL
 {
-    public class GenericsDAL<T> where T : class
+    public class BaseDAL<T> where T : class
     {
         private DbSet<T> _dbSet;
         private BDD_RUNNINGEntities _context;
 
-        public GenericsDAL(BDD_RUNNINGEntities context)
+        /*
+        * Initialize the context and the dbset
+        */
+        public BaseDAL(BDD_RUNNINGEntities context)
         {
             this._context = context;
             this._dbSet = context.Set<T>();
@@ -54,6 +57,51 @@ namespace DAL
             }
 
             return ret;
+        }
+
+        /*
+        * Select an entity by ID
+        * Parameter : The primary key of the entity
+        * Return the entity
+        */
+        public virtual T SelectByID(object id)
+        {
+            return this._dbSet.Find(id);
+        }
+
+        /*
+        * Insert an entity in the database
+        */
+        public virtual void Insert(T entity)
+        {
+            this._dbSet.Add(entity);
+        }
+
+        /*
+        * Delete an entity with it's id
+        */
+        public virtual void Delete(object id)
+        {
+            Delete(SelectByID(id));
+        }
+
+        /*
+        * Delete an entity with itself
+        */
+        public virtual void Delete(T entity)
+        {
+            if (this._context.Entry(entity).State == EntityState.Detached)
+                this._dbSet.Attach(entity);
+            this._dbSet.Remove(entity);
+        }
+
+        /*
+        * Update an entity
+        */
+        public virtual void Update(T entity)
+        {
+            this._dbSet.Attach(entity);
+            this._context.Entry(entity).State = EntityState.Modified;
         }
     }
 }
