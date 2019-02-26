@@ -1,0 +1,10 @@
+D:\S3\CourseProject\BO\BO\bin\Debug\BO.dll.config
+D:\S3\CourseProject\BO\BO\bin\Debug\BO.dll
+D:\S3\CourseProject\BO\BO\bin\Debug\BO.pdb
+D:\S3\CourseProject\BO\BO\bin\Debug\EntityFramework.dll
+D:\S3\CourseProject\BO\BO\bin\Debug\EntityFramework.SqlServer.dll
+D:\S3\CourseProject\BO\BO\bin\Debug\EntityFramework.xml
+D:\S3\CourseProject\BO\BO\bin\Debug\EntityFramework.SqlServer.xml
+D:\S3\CourseProject\BO\BO\obj\Debug\BO.csprojResolveAssemblyReference.cache
+D:\S3\CourseProject\BO\BO\obj\Debug\BO.dll
+D:\S3\CourseProject\BO\BO\obj\Debug\BO.pdb
