@@ -13,10 +13,10 @@ namespace BO
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class BDD_RUNNINGEntities : DbContext
+    public partial class DataEntities : DbContext
     {
-        public BDD_RUNNINGEntities()
-            : base("name=BDD_RUNNINGEntities")
+        public DataEntities()
+            : base("name=DataEntities")
         {
         }
     
@@ -27,13 +27,12 @@ namespace BO
     
         public virtual DbSet<ApplicationUser> ApplicationUser { get; set; }
         public virtual DbSet<Course> Course { get; set; }
-        public virtual DbSet<HistoricUserCourse> HistoricUserCourse { get; set; }
-        public virtual DbSet<PointOfInterest> PointOfInterest { get; set; }
-        public virtual DbSet<Position> Position { get; set; }
         public virtual DbSet<Registration> Registration { get; set; }
         public virtual DbSet<RoleUser> RoleUser { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<TypeCourse> TypeCourse { get; set; }
         public virtual DbSet<TypePOI> TypePOI { get; set; }
+        public virtual DbSet<HistoricUserCourse> HistoricUserCourse { get; set; }
+        public virtual DbSet<PointOfInterest> PointOfInterest { get; set; }
     }
 }

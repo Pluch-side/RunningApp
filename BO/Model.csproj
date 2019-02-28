@@ -78,9 +78,7 @@
     <Compile Include="PointOfInterest.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="Position.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-    </Compile>
+    <Compile Include="PointOfInterestPartial.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Registration.cs">
       <DependentUpon>Model.tt</DependentUpon>

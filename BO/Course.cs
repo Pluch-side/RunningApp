@@ -17,20 +17,22 @@ namespace BO
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Course()
         {
-            this.PointOfInterest = new HashSet<PointOfInterest>();
             this.Registration = new HashSet<Registration>();
+            this.PointOfInterest = new HashSet<PointOfInterest>();
         }
     
         public int ID { get; set; }
         public string Name { get; set; }
         public string City { get; set; }
         public System.DateTime DateStart { get; set; }
+        public Nullable<int> ApplicationUserID { get; set; }
         public Nullable<int> TypeCourseID { get; set; }
     
+        public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual TypeCourse TypeCourse { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PointOfInterest> PointOfInterest { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Registration> Registration { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PointOfInterest> PointOfInterest { get; set; }
     }
 }

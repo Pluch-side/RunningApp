@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="BDD_RUNNINGModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ApplicationUser">
           <Key>
             <PropertyRef Name="ID" />
@@ -25,15 +25,16 @@
           <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="City" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="DateStart" Type="datetime" Nullable="false" />
+          <Property Name="ApplicationUserID" Type="int" />
           <Property Name="TypeCourseID" Type="int" />
         </EntityType>
         <EntityType Name="HistoricUserCourse">
           <Key>
             <PropertyRef Name="RegistrationID" />
-            <PropertyRef Name="PositionID" />
           </Key>
           <Property Name="RegistrationID" Type="int" Nullable="false" />
-          <Property Name="PositionID" Type="int" Nullable="false" />
+          <Property Name="Latitude" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Longitude" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="DateArrival" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PointOfInterest">
@@ -43,17 +44,10 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="OrderPOI" Type="int" Nullable="false" />
+          <Property Name="Latitude" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Longitude" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="CourseID" Type="int" />
           <Property Name="TypePOIID" Type="int" />
-          <Property Name="PositionID" Type="int" />
-        </EntityType>
-        <EntityType Name="Position">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Longitude" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="Latitude" Type="decimal" Precision="18" Scale="0" Nullable="false" />
         </EntityType>
         <EntityType Name="Registration">
           <Key>
@@ -84,17 +78,17 @@
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Label" Type="varchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="TypePOI">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Label" Type="varchar" MaxLength="255" Nullable="false" />
         </EntityType>
-        <Association Name="FK__Applicati__RoleU__09BF4B92">
+        <Association Name="FK__Applicati__RoleU__7A9D0393">
           <End Role="RoleUser" Type="Self.RoleUser" Multiplicity="0..1" />
           <End Role="ApplicationUser" Type="Self.ApplicationUser" Multiplicity="*" />
           <ReferentialConstraint>
@@ -106,7 +100,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Course__TypeCour__0AB36FCB">
+        <Association Name="FK__Course__Applicat__7C854C05">
+          <End Role="ApplicationUser" Type="Self.ApplicationUser" Multiplicity="0..1" />
+          <End Role="Course" Type="Self.Course" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApplicationUser">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Course">
+              <PropertyRef Name="ApplicationUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Course__TypeCour__7B9127CC">
           <End Role="TypeCourse" Type="Self.TypeCourse" Multiplicity="0..1" />
           <End Role="Course" Type="Self.Course" Multiplicity="*" />
           <ReferentialConstraint>
@@ -118,21 +124,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__HistoricU__Posit__12549193">
-          <End Role="Position" Type="Self.Position" Multiplicity="1" />
-          <End Role="HistoricUserCourse" Type="Self.HistoricUserCourse" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Position">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="HistoricUserCourse">
-              <PropertyRef Name="PositionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__HistoricU__Regis__11606D5A">
+        <Association Name="FK__HistoricU__Regis__023E255B">
           <End Role="Registration" Type="Self.Registration" Multiplicity="1" />
-          <End Role="HistoricUserCourse" Type="Self.HistoricUserCourse" Multiplicity="*" />
+          <End Role="HistoricUserCourse" Type="Self.HistoricUserCourse" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="Registration">
               <PropertyRef Name="ID" />
@@ -142,7 +136,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PointOfIn__Cours__0D8FDC76">
+        <Association Name="FK__PointOfIn__Cours__7E6D9477">
           <End Role="Course" Type="Self.Course" Multiplicity="0..1" />
           <End Role="PointOfInterest" Type="Self.PointOfInterest" Multiplicity="*" />
           <ReferentialConstraint>
@@ -154,19 +148,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PointOfIn__Posit__0C9BB83D">
-          <End Role="Position" Type="Self.Position" Multiplicity="0..1" />
-          <End Role="PointOfInterest" Type="Self.PointOfInterest" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Position">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="PointOfInterest">
-              <PropertyRef Name="PositionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__PointOfIn__TypeP__0BA79404">
+        <Association Name="FK__PointOfIn__TypeP__7D79703E">
           <End Role="TypePOI" Type="Self.TypePOI" Multiplicity="0..1" />
           <End Role="PointOfInterest" Type="Self.PointOfInterest" Multiplicity="*" />
           <ReferentialConstraint>
@@ -178,7 +160,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Registrat__Appli__0F7824E8">
+        <Association Name="FK__Registrat__Appli__0055DCE9">
           <End Role="ApplicationUser" Type="Self.ApplicationUser" Multiplicity="1" />
           <End Role="Registration" Type="Self.Registration" Multiplicity="*" />
           <ReferentialConstraint>
@@ -190,7 +172,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Registrat__Cours__0E8400AF">
+        <Association Name="FK__Registrat__Cours__7F61B8B0">
           <End Role="Course" Type="Self.Course" Multiplicity="1" />
           <End Role="Registration" Type="Self.Registration" Multiplicity="*" />
           <ReferentialConstraint>
@@ -202,59 +184,53 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="ModelStoreContainer">
+        <EntityContainer Name="BDD_RUNNINGModelStoreContainer">
           <EntitySet Name="ApplicationUser" EntityType="Self.ApplicationUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Course" EntityType="Self.Course" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HistoricUserCourse" EntityType="Self.HistoricUserCourse" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PointOfInterest" EntityType="Self.PointOfInterest" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Position" EntityType="Self.Position" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Registration" EntityType="Self.Registration" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RoleUser" EntityType="Self.RoleUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TypeCourse" EntityType="Self.TypeCourse" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TypePOI" EntityType="Self.TypePOI" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__Applicati__RoleU__09BF4B92" Association="Self.FK__Applicati__RoleU__09BF4B92">
+          <AssociationSet Name="FK__Applicati__RoleU__7A9D0393" Association="Self.FK__Applicati__RoleU__7A9D0393">
             <End Role="RoleUser" EntitySet="RoleUser" />
             <End Role="ApplicationUser" EntitySet="ApplicationUser" />
           </AssociationSet>
-          <AssociationSet Name="FK__Course__TypeCour__0AB36FCB" Association="Self.FK__Course__TypeCour__0AB36FCB">
+          <AssociationSet Name="FK__Course__Applicat__7C854C05" Association="Self.FK__Course__Applicat__7C854C05">
+            <End Role="ApplicationUser" EntitySet="ApplicationUser" />
+            <End Role="Course" EntitySet="Course" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Course__TypeCour__7B9127CC" Association="Self.FK__Course__TypeCour__7B9127CC">
             <End Role="TypeCourse" EntitySet="TypeCourse" />
             <End Role="Course" EntitySet="Course" />
           </AssociationSet>
-          <AssociationSet Name="FK__HistoricU__Posit__12549193" Association="Self.FK__HistoricU__Posit__12549193">
-            <End Role="Position" EntitySet="Position" />
-            <End Role="HistoricUserCourse" EntitySet="HistoricUserCourse" />
-          </AssociationSet>
-          <AssociationSet Name="FK__HistoricU__Regis__11606D5A" Association="Self.FK__HistoricU__Regis__11606D5A">
+          <AssociationSet Name="FK__HistoricU__Regis__023E255B" Association="Self.FK__HistoricU__Regis__023E255B">
             <End Role="Registration" EntitySet="Registration" />
             <End Role="HistoricUserCourse" EntitySet="HistoricUserCourse" />
           </AssociationSet>
-          <AssociationSet Name="FK__PointOfIn__Cours__0D8FDC76" Association="Self.FK__PointOfIn__Cours__0D8FDC76">
+          <AssociationSet Name="FK__PointOfIn__Cours__7E6D9477" Association="Self.FK__PointOfIn__Cours__7E6D9477">
             <End Role="Course" EntitySet="Course" />
             <End Role="PointOfInterest" EntitySet="PointOfInterest" />
           </AssociationSet>
-          <AssociationSet Name="FK__PointOfIn__Posit__0C9BB83D" Association="Self.FK__PointOfIn__Posit__0C9BB83D">
-            <End Role="Position" EntitySet="Position" />
-            <End Role="PointOfInterest" EntitySet="PointOfInterest" />
-          </AssociationSet>
-          <AssociationSet Name="FK__PointOfIn__TypeP__0BA79404" Association="Self.FK__PointOfIn__TypeP__0BA79404">
+          <AssociationSet Name="FK__PointOfIn__TypeP__7D79703E" Association="Self.FK__PointOfIn__TypeP__7D79703E">
             <End Role="TypePOI" EntitySet="TypePOI" />
             <End Role="PointOfInterest" EntitySet="PointOfInterest" />
           </AssociationSet>
-          <AssociationSet Name="FK__Registrat__Appli__0F7824E8" Association="Self.FK__Registrat__Appli__0F7824E8">
+          <AssociationSet Name="FK__Registrat__Appli__0055DCE9" Association="Self.FK__Registrat__Appli__0055DCE9">
             <End Role="ApplicationUser" EntitySet="ApplicationUser" />
             <End Role="Registration" EntitySet="Registration" />
           </AssociationSet>
-          <AssociationSet Name="FK__Registrat__Cours__0E8400AF" Association="Self.FK__Registrat__Cours__0E8400AF">
+          <AssociationSet Name="FK__Registrat__Cours__7F61B8B0" Association="Self.FK__Registrat__Cours__7F61B8B0">
             <End Role="Course" EntitySet="Course" />
             <End Role="Registration" EntitySet="Registration" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="BDD_RUNNINGModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="ApplicationUser">
           <Key>
             <PropertyRef Name="ID" />
@@ -266,8 +242,9 @@
           <Property Name="City" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="PostalCode" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
           <Property Name="RoleUserID" Type="Int32" />
-          <NavigationProperty Name="RoleUser" Relationship="Self.FK__Applicati__RoleU__09BF4B92" FromRole="ApplicationUser" ToRole="RoleUser" />
-          <NavigationProperty Name="Registration" Relationship="Self.FK__Registrat__Appli__0F7824E8" FromRole="ApplicationUser" ToRole="Registration" />
+          <NavigationProperty Name="RoleUser" Relationship="Self.FK__Applicati__RoleU__2A8120DF" FromRole="ApplicationUser" ToRole="RoleUser" />
+          <NavigationProperty Name="Course" Relationship="Self.FK__Course__Applicat__2C696951" FromRole="ApplicationUser" ToRole="Course" />
+          <NavigationProperty Name="Registration" Relationship="Self.FK__Registrat__Appli__3039FA35" FromRole="ApplicationUser" ToRole="Registration" />
         </EntityType>
         <EntityType Name="Course">
           <Key>
@@ -277,45 +254,12 @@
           <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="City" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="DateStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ApplicationUserID" Type="Int32" />
           <Property Name="TypeCourseID" Type="Int32" />
-          <NavigationProperty Name="TypeCourse" Relationship="Self.FK__Course__TypeCour__0AB36FCB" FromRole="Course" ToRole="TypeCourse" />
-          <NavigationProperty Name="PointOfInterest" Relationship="Self.FK__PointOfIn__Cours__0D8FDC76" FromRole="Course" ToRole="PointOfInterest" />
-          <NavigationProperty Name="Registration" Relationship="Self.FK__Registrat__Cours__0E8400AF" FromRole="Course" ToRole="Registration" />
-        </EntityType>
-        <EntityType Name="HistoricUserCourse">
-          <Key>
-            <PropertyRef Name="RegistrationID" />
-            <PropertyRef Name="PositionID" />
-          </Key>
-          <Property Name="RegistrationID" Type="Int32" Nullable="false" />
-          <Property Name="PositionID" Type="Int32" Nullable="false" />
-          <Property Name="DateArrival" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Position" Relationship="Self.FK__HistoricU__Posit__12549193" FromRole="HistoricUserCourse" ToRole="Position" />
-          <NavigationProperty Name="Registration" Relationship="Self.FK__HistoricU__Regis__11606D5A" FromRole="HistoricUserCourse" ToRole="Registration" />
-        </EntityType>
-        <EntityType Name="PointOfInterest">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="OrderPOI" Type="Int32" Nullable="false" />
-          <Property Name="CourseID" Type="Int32" />
-          <Property Name="TypePOIID" Type="Int32" />
-          <Property Name="PositionID" Type="Int32" />
-          <NavigationProperty Name="Course" Relationship="Self.FK__PointOfIn__Cours__0D8FDC76" FromRole="PointOfInterest" ToRole="Course" />
-          <NavigationProperty Name="Position" Relationship="Self.FK__PointOfIn__Posit__0C9BB83D" FromRole="PointOfInterest" ToRole="Position" />
-          <NavigationProperty Name="TypePOI" Relationship="Self.FK__PointOfIn__TypeP__0BA79404" FromRole="PointOfInterest" ToRole="TypePOI" />
-        </EntityType>
-        <EntityType Name="Position">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Longitude" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="Latitude" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <NavigationProperty Name="HistoricUserCourse" Relationship="Self.FK__HistoricU__Posit__12549193" FromRole="Position" ToRole="HistoricUserCourse" />
-          <NavigationProperty Name="PointOfInterest" Relationship="Self.FK__PointOfIn__Posit__0C9BB83D" FromRole="Position" ToRole="PointOfInterest" />
+          <NavigationProperty Name="ApplicationUser" Relationship="Self.FK__Course__Applicat__2C696951" FromRole="Course" ToRole="ApplicationUser" />
+          <NavigationProperty Name="TypeCourse" Relationship="Self.FK__Course__TypeCour__2B754518" FromRole="Course" ToRole="TypeCourse" />
+          <NavigationProperty Name="Registration" Relationship="Self.FK__Registrat__Cours__2F45D5FC" FromRole="Course" ToRole="Registration" />
+          <NavigationProperty Name="PointOfInterest" Relationship="BDD_RUNNINGModel.FK__PointOfIn__Cours__7E6D9477" FromRole="Course" ToRole="PointOfInterest" />
         </EntityType>
         <EntityType Name="Registration">
           <Key>
@@ -324,9 +268,9 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ApplicationUserID" Type="Int32" Nullable="false" />
           <Property Name="CourseID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="ApplicationUser" Relationship="Self.FK__Registrat__Appli__0F7824E8" FromRole="Registration" ToRole="ApplicationUser" />
-          <NavigationProperty Name="Course" Relationship="Self.FK__Registrat__Cours__0E8400AF" FromRole="Registration" ToRole="Course" />
-          <NavigationProperty Name="HistoricUserCourse" Relationship="Self.FK__HistoricU__Regis__11606D5A" FromRole="Registration" ToRole="HistoricUserCourse" />
+          <NavigationProperty Name="ApplicationUser" Relationship="Self.FK__Registrat__Appli__3039FA35" FromRole="Registration" ToRole="ApplicationUser" />
+          <NavigationProperty Name="Course" Relationship="Self.FK__Registrat__Cours__2F45D5FC" FromRole="Registration" ToRole="Course" />
+          <NavigationProperty Name="HistoricUserCourse" Relationship="BDD_RUNNINGModel.FK__HistoricU__Regis__6A669BCA" FromRole="Registration" ToRole="HistoricUserCourse" />
         </EntityType>
         <EntityType Name="RoleUser">
           <Key>
@@ -334,7 +278,7 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" />
           <Property Name="Label" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="ApplicationUser" Relationship="Self.FK__Applicati__RoleU__09BF4B92" FromRole="RoleUser" ToRole="ApplicationUser" />
+          <NavigationProperty Name="ApplicationUser" Relationship="Self.FK__Applicati__RoleU__2A8120DF" FromRole="RoleUser" ToRole="ApplicationUser" />
         </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
@@ -350,19 +294,19 @@
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Label" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Course" Relationship="Self.FK__Course__TypeCour__0AB36FCB" FromRole="TypeCourse" ToRole="Course" />
+          <NavigationProperty Name="Course" Relationship="Self.FK__Course__TypeCour__2B754518" FromRole="TypeCourse" ToRole="Course" />
         </EntityType>
         <EntityType Name="TypePOI">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Label" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="PointOfInterest" Relationship="Self.FK__PointOfIn__TypeP__0BA79404" FromRole="TypePOI" ToRole="PointOfInterest" />
+          <NavigationProperty Name="PointOfInterest" Relationship="BDD_RUNNINGModel.FK__PointOfIn__TypeP__7D79703E" FromRole="TypePOI" ToRole="PointOfInterest" />
         </EntityType>
-        <Association Name="FK__Applicati__RoleU__09BF4B92">
+        <Association Name="FK__Applicati__RoleU__2A8120DF">
           <End Role="RoleUser" Type="Self.RoleUser" Multiplicity="0..1" />
           <End Role="ApplicationUser" Type="Self.ApplicationUser" Multiplicity="*" />
           <ReferentialConstraint>
@@ -374,7 +318,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Registrat__Appli__0F7824E8">
+        <Association Name="FK__Course__Applicat__2C696951">
+          <End Role="ApplicationUser" Type="Self.ApplicationUser" Multiplicity="0..1" />
+          <End Role="Course" Type="Self.Course" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApplicationUser">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Course">
+              <PropertyRef Name="ApplicationUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Registrat__Appli__3039FA35">
           <End Role="ApplicationUser" Type="Self.ApplicationUser" Multiplicity="1" />
           <End Role="Registration" Type="Self.Registration" Multiplicity="*" />
           <ReferentialConstraint>
@@ -386,7 +342,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Course__TypeCour__0AB36FCB">
+        <Association Name="FK__Course__TypeCour__2B754518">
           <End Role="TypeCourse" Type="Self.TypeCourse" Multiplicity="0..1" />
           <End Role="Course" Type="Self.Course" Multiplicity="*" />
           <ReferentialConstraint>
@@ -398,19 +354,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PointOfIn__Cours__0D8FDC76">
-          <End Role="Course" Type="Self.Course" Multiplicity="0..1" />
-          <End Role="PointOfInterest" Type="Self.PointOfInterest" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Course">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="PointOfInterest">
-              <PropertyRef Name="CourseID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Registrat__Cours__0E8400AF">
+        <Association Name="FK__Registrat__Cours__2F45D5FC">
           <End Role="Course" Type="Self.Course" Multiplicity="1" />
           <End Role="Registration" Type="Self.Registration" Multiplicity="*" />
           <ReferentialConstraint>
@@ -422,21 +366,62 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__HistoricU__Posit__12549193">
-          <End Role="Position" Type="Self.Position" Multiplicity="1" />
-          <End Role="HistoricUserCourse" Type="Self.HistoricUserCourse" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Position">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="HistoricUserCourse">
-              <PropertyRef Name="PositionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__HistoricU__Regis__11606D5A">
-          <End Role="Registration" Type="Self.Registration" Multiplicity="1" />
-          <End Role="HistoricUserCourse" Type="Self.HistoricUserCourse" Multiplicity="*" />
+        <EntityContainer Name="DataEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="ApplicationUser" EntityType="Self.ApplicationUser" />
+          <EntitySet Name="Course" EntityType="Self.Course" />
+          <EntitySet Name="Registration" EntityType="Self.Registration" />
+          <EntitySet Name="RoleUser" EntityType="Self.RoleUser" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
+          <EntitySet Name="TypeCourse" EntityType="Self.TypeCourse" />
+          <EntitySet Name="TypePOI" EntityType="Self.TypePOI" />
+          <AssociationSet Name="FK__Applicati__RoleU__2A8120DF" Association="Self.FK__Applicati__RoleU__2A8120DF">
+            <End Role="RoleUser" EntitySet="RoleUser" />
+            <End Role="ApplicationUser" EntitySet="ApplicationUser" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Course__Applicat__2C696951" Association="Self.FK__Course__Applicat__2C696951">
+            <End Role="ApplicationUser" EntitySet="ApplicationUser" />
+            <End Role="Course" EntitySet="Course" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Registrat__Appli__3039FA35" Association="Self.FK__Registrat__Appli__3039FA35">
+            <End Role="ApplicationUser" EntitySet="ApplicationUser" />
+            <End Role="Registration" EntitySet="Registration" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Course__TypeCour__2B754518" Association="Self.FK__Course__TypeCour__2B754518">
+            <End Role="TypeCourse" EntitySet="TypeCourse" />
+            <End Role="Course" EntitySet="Course" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Registrat__Cours__2F45D5FC" Association="Self.FK__Registrat__Cours__2F45D5FC">
+            <End Role="Course" EntitySet="Course" />
+            <End Role="Registration" EntitySet="Registration" />
+          </AssociationSet>
+          <EntitySet Name="HistoricUserCourse" EntityType="BDD_RUNNINGModel.HistoricUserCourse" />
+          <AssociationSet Name="FK__HistoricU__Regis__6A669BCA" Association="BDD_RUNNINGModel.FK__HistoricU__Regis__6A669BCA">
+            <End Role="Registration" EntitySet="Registration" />
+            <End Role="HistoricUserCourse" EntitySet="HistoricUserCourse" />
+          </AssociationSet>
+          <EntitySet Name="PointOfInterest" EntityType="BDD_RUNNINGModel.PointOfInterest" />
+          <AssociationSet Name="FK__PointOfIn__Cours__7E6D9477" Association="BDD_RUNNINGModel.FK__PointOfIn__Cours__7E6D9477">
+            <End Role="Course" EntitySet="Course" />
+            <End Role="PointOfInterest" EntitySet="PointOfInterest" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PointOfIn__TypeP__7D79703E" Association="BDD_RUNNINGModel.FK__PointOfIn__TypeP__7D79703E">
+            <End Role="TypePOI" EntitySet="TypePOI" />
+            <End Role="PointOfInterest" EntitySet="PointOfInterest" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="HistoricUserCourse">
+          <Key>
+            <PropertyRef Name="RegistrationID" />
+          </Key>
+          <Property Name="RegistrationID" Type="Int32" Nullable="false" />
+          <Property Name="Latitude" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Longitude" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DateArrival" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Registration" Relationship="BDD_RUNNINGModel.FK__HistoricU__Regis__6A669BCA" FromRole="HistoricUserCourse" ToRole="Registration" />
+        </EntityType>
+        <Association Name="FK__HistoricU__Regis__6A669BCA">
+          <End Type="BDD_RUNNINGModel.Registration" Role="Registration" Multiplicity="1" />
+          <End Type="BDD_RUNNINGModel.HistoricUserCourse" Role="HistoricUserCourse" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="Registration">
               <PropertyRef Name="ID" />
@@ -446,21 +431,35 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PointOfIn__Posit__0C9BB83D">
-          <End Role="Position" Type="Self.Position" Multiplicity="0..1" />
-          <End Role="PointOfInterest" Type="Self.PointOfInterest" Multiplicity="*" />
+        <EntityType Name="PointOfInterest">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="OrderPOI" Type="Int32" Nullable="false" />
+          <Property Name="Latitude" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Longitude" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CourseID" Type="Int32" />
+          <Property Name="TypePOIID" Type="Int32" />
+          <NavigationProperty Name="Course" Relationship="BDD_RUNNINGModel.FK__PointOfIn__Cours__7E6D9477" FromRole="PointOfInterest" ToRole="Course" />
+          <NavigationProperty Name="TypePOI" Relationship="BDD_RUNNINGModel.FK__PointOfIn__TypeP__7D79703E" FromRole="PointOfInterest" ToRole="TypePOI" />
+        </EntityType>
+        <Association Name="FK__PointOfIn__Cours__7E6D9477">
+          <End Type="BDD_RUNNINGModel.Course" Role="Course" Multiplicity="0..1" />
+          <End Type="BDD_RUNNINGModel.PointOfInterest" Role="PointOfInterest" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Position">
+            <Principal Role="Course">
               <PropertyRef Name="ID" />
             </Principal>
             <Dependent Role="PointOfInterest">
-              <PropertyRef Name="PositionID" />
+              <PropertyRef Name="CourseID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PointOfIn__TypeP__0BA79404">
-          <End Role="TypePOI" Type="Self.TypePOI" Multiplicity="0..1" />
-          <End Role="PointOfInterest" Type="Self.PointOfInterest" Multiplicity="*" />
+        <Association Name="FK__PointOfIn__TypeP__7D79703E">
+          <End Type="BDD_RUNNINGModel.TypePOI" Role="TypePOI" Multiplicity="0..1" />
+          <End Type="BDD_RUNNINGModel.PointOfInterest" Role="PointOfInterest" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="TypePOI">
               <PropertyRef Name="ID" />
@@ -470,62 +469,14 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="BDD_RUNNINGEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="ApplicationUser" EntityType="Self.ApplicationUser" />
-          <EntitySet Name="Course" EntityType="Self.Course" />
-          <EntitySet Name="HistoricUserCourse" EntityType="Self.HistoricUserCourse" />
-          <EntitySet Name="PointOfInterest" EntityType="Self.PointOfInterest" />
-          <EntitySet Name="Position" EntityType="Self.Position" />
-          <EntitySet Name="Registration" EntityType="Self.Registration" />
-          <EntitySet Name="RoleUser" EntityType="Self.RoleUser" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
-          <EntitySet Name="TypeCourse" EntityType="Self.TypeCourse" />
-          <EntitySet Name="TypePOI" EntityType="Self.TypePOI" />
-          <AssociationSet Name="FK__Applicati__RoleU__09BF4B92" Association="Self.FK__Applicati__RoleU__09BF4B92">
-            <End Role="RoleUser" EntitySet="RoleUser" />
-            <End Role="ApplicationUser" EntitySet="ApplicationUser" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Registrat__Appli__0F7824E8" Association="Self.FK__Registrat__Appli__0F7824E8">
-            <End Role="ApplicationUser" EntitySet="ApplicationUser" />
-            <End Role="Registration" EntitySet="Registration" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Course__TypeCour__0AB36FCB" Association="Self.FK__Course__TypeCour__0AB36FCB">
-            <End Role="TypeCourse" EntitySet="TypeCourse" />
-            <End Role="Course" EntitySet="Course" />
-          </AssociationSet>
-          <AssociationSet Name="FK__PointOfIn__Cours__0D8FDC76" Association="Self.FK__PointOfIn__Cours__0D8FDC76">
-            <End Role="Course" EntitySet="Course" />
-            <End Role="PointOfInterest" EntitySet="PointOfInterest" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Registrat__Cours__0E8400AF" Association="Self.FK__Registrat__Cours__0E8400AF">
-            <End Role="Course" EntitySet="Course" />
-            <End Role="Registration" EntitySet="Registration" />
-          </AssociationSet>
-          <AssociationSet Name="FK__HistoricU__Posit__12549193" Association="Self.FK__HistoricU__Posit__12549193">
-            <End Role="Position" EntitySet="Position" />
-            <End Role="HistoricUserCourse" EntitySet="HistoricUserCourse" />
-          </AssociationSet>
-          <AssociationSet Name="FK__HistoricU__Regis__11606D5A" Association="Self.FK__HistoricU__Regis__11606D5A">
-            <End Role="Registration" EntitySet="Registration" />
-            <End Role="HistoricUserCourse" EntitySet="HistoricUserCourse" />
-          </AssociationSet>
-          <AssociationSet Name="FK__PointOfIn__Posit__0C9BB83D" Association="Self.FK__PointOfIn__Posit__0C9BB83D">
-            <End Role="Position" EntitySet="Position" />
-            <End Role="PointOfInterest" EntitySet="PointOfInterest" />
-          </AssociationSet>
-          <AssociationSet Name="FK__PointOfIn__TypeP__0BA79404" Association="Self.FK__PointOfIn__TypeP__0BA79404">
-            <End Role="TypePOI" EntitySet="TypePOI" />
-            <End Role="PointOfInterest" EntitySet="PointOfInterest" />
-          </AssociationSet>
-        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="ModelStoreContainer" CdmEntityContainer="BDD_RUNNINGEntities">
+        <EntityContainerMapping StorageEntityContainer="BDD_RUNNINGModelStoreContainer" CdmEntityContainer="DataEntities">
           <EntitySetMapping Name="ApplicationUser">
-            <EntityTypeMapping TypeName="Model.ApplicationUser">
+            <EntityTypeMapping TypeName="BDD_RUNNINGModel.ApplicationUser">
               <MappingFragment StoreEntitySet="ApplicationUser">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
@@ -538,48 +489,19 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Course">
-            <EntityTypeMapping TypeName="Model.Course">
+            <EntityTypeMapping TypeName="BDD_RUNNINGModel.Course">
               <MappingFragment StoreEntitySet="Course">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="City" ColumnName="City" />
                 <ScalarProperty Name="DateStart" ColumnName="DateStart" />
+                <ScalarProperty Name="ApplicationUserID" ColumnName="ApplicationUserID" />
                 <ScalarProperty Name="TypeCourseID" ColumnName="TypeCourseID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="HistoricUserCourse">
-            <EntityTypeMapping TypeName="Model.HistoricUserCourse">
-              <MappingFragment StoreEntitySet="HistoricUserCourse">
-                <ScalarProperty Name="RegistrationID" ColumnName="RegistrationID" />
-                <ScalarProperty Name="PositionID" ColumnName="PositionID" />
-                <ScalarProperty Name="DateArrival" ColumnName="DateArrival" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PointOfInterest">
-            <EntityTypeMapping TypeName="Model.PointOfInterest">
-              <MappingFragment StoreEntitySet="PointOfInterest">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="OrderPOI" ColumnName="OrderPOI" />
-                <ScalarProperty Name="CourseID" ColumnName="CourseID" />
-                <ScalarProperty Name="TypePOIID" ColumnName="TypePOIID" />
-                <ScalarProperty Name="PositionID" ColumnName="PositionID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Position">
-            <EntityTypeMapping TypeName="Model.Position">
-              <MappingFragment StoreEntitySet="Position">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
-                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Registration">
-            <EntityTypeMapping TypeName="Model.Registration">
+            <EntityTypeMapping TypeName="BDD_RUNNINGModel.Registration">
               <MappingFragment StoreEntitySet="Registration">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="ApplicationUserID" ColumnName="ApplicationUserID" />
@@ -588,7 +510,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="RoleUser">
-            <EntityTypeMapping TypeName="Model.RoleUser">
+            <EntityTypeMapping TypeName="BDD_RUNNINGModel.RoleUser">
               <MappingFragment StoreEntitySet="RoleUser">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Label" ColumnName="Label" />
@@ -596,7 +518,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="Model.sysdiagrams">
+            <EntityTypeMapping TypeName="BDD_RUNNINGModel.sysdiagrams">
               <MappingFragment StoreEntitySet="sysdiagrams">
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="principal_id" ColumnName="principal_id" />
@@ -607,7 +529,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="TypeCourse">
-            <EntityTypeMapping TypeName="Model.TypeCourse">
+            <EntityTypeMapping TypeName="BDD_RUNNINGModel.TypeCourse">
               <MappingFragment StoreEntitySet="TypeCourse">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Label" ColumnName="Label" />
@@ -615,10 +537,33 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="TypePOI">
-            <EntityTypeMapping TypeName="Model.TypePOI">
+            <EntityTypeMapping TypeName="BDD_RUNNINGModel.TypePOI">
               <MappingFragment StoreEntitySet="TypePOI">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Label" ColumnName="Label" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HistoricUserCourse">
+            <EntityTypeMapping TypeName="BDD_RUNNINGModel.HistoricUserCourse">
+              <MappingFragment StoreEntitySet="HistoricUserCourse">
+                <ScalarProperty Name="DateArrival" ColumnName="DateArrival" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="RegistrationID" ColumnName="RegistrationID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PointOfInterest">
+            <EntityTypeMapping TypeName="BDD_RUNNINGModel.PointOfInterest">
+              <MappingFragment StoreEntitySet="PointOfInterest">
+                <ScalarProperty Name="TypePOIID" ColumnName="TypePOIID" />
+                <ScalarProperty Name="CourseID" ColumnName="CourseID" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="OrderPOI" ColumnName="OrderPOI" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

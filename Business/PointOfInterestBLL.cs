@@ -27,6 +27,16 @@ namespace Business
             return this._dataLayer.PointOfInterestRepository.SelectByID(id);
         }
 
+        public List<PointOfInterest> GetByCourseID(int courseId)
+        {
+            return this._dataLayer.PointOfInterestRepository.Select(item => item.CourseID == courseId,null,"TypePOI").ToList();
+        }
+
+        public List<PointOfInterest> GetByOrder(int order)
+        {
+            return this._dataLayer.PointOfInterestRepository.Select(item => item.OrderPOI == order, null, "TypePOI").ToList();
+        }
+
         public List<PointOfInterest> GetAll()
         {
             return this._dataLayer.PointOfInterestRepository.Select().ToList();
@@ -40,6 +50,11 @@ namespace Business
         public void Remove(PointOfInterest entity)
         {
             this._dataLayer.PointOfInterestRepository.Delete(entity);
+        }
+
+        public void RemoveByID(int id)
+        {
+            this._dataLayer.PointOfInterestRepository.Delete(id);
         }
 
         public void Update(PointOfInterest entity)

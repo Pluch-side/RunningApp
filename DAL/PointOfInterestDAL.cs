@@ -10,7 +10,7 @@ namespace DAL
     public class PointOfInterestDAL : IDisposable
     {
         #region Extend BaseDAL
-        private BDD_RUNNINGEntities _context = new BDD_RUNNINGEntities();
+        private DataEntities _context = new DataEntities();
         private BaseDAL<PointOfInterest> pointOfInterestRepository;
         private bool disposed = false;
 

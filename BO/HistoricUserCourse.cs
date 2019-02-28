@@ -15,10 +15,10 @@ namespace BO
     public partial class HistoricUserCourse
     {
         public int RegistrationID { get; set; }
-        public int PositionID { get; set; }
+        public string Latitude { get; set; }
+        public string Longitude { get; set; }
         public System.DateTime DateArrival { get; set; }
     
-        public virtual Position Position { get; set; }
         public virtual Registration Registration { get; set; }
     }
 }

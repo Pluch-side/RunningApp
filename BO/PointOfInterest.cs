@@ -17,12 +17,12 @@ namespace BO
         public int ID { get; set; }
         public string Name { get; set; }
         public int OrderPOI { get; set; }
+        public string Latitude { get; set; }
+        public string Longitude { get; set; }
         public Nullable<int> CourseID { get; set; }
         public Nullable<int> TypePOIID { get; set; }
-        public Nullable<int> PositionID { get; set; }
     
         public virtual Course Course { get; set; }
-        public virtual Position Position { get; set; }
         public virtual TypePOI TypePOI { get; set; }
     }
 }

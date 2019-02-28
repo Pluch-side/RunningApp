@@ -14,19 +14,12 @@ namespace BO
     
     public partial class Registration
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Registration()
-        {
-            this.HistoricUserCourse = new HashSet<HistoricUserCourse>();
-        }
-    
         public int ID { get; set; }
         public int ApplicationUserID { get; set; }
         public int CourseID { get; set; }
     
         public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual Course Course { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<HistoricUserCourse> HistoricUserCourse { get; set; }
+        public virtual HistoricUserCourse HistoricUserCourse { get; set; }
     }
 }

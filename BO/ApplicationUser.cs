@@ -17,6 +17,7 @@ namespace BO
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ApplicationUser()
         {
+            this.Course = new HashSet<Course>();
             this.Registration = new HashSet<Registration>();
         }
     
@@ -29,6 +30,8 @@ namespace BO
         public Nullable<int> RoleUserID { get; set; }
     
         public virtual RoleUser RoleUser { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Course> Course { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Registration> Registration { get; set; }
     }

@@ -10,7 +10,7 @@ namespace DAL
     public class TypeCourseDAL : IDisposable
     {
         #region Extend BaseDAL
-        private BDD_RUNNINGEntities _context = new BDD_RUNNINGEntities();
+        private DataEntities _context = new DataEntities();
         private BaseDAL<TypeCourse> typeCourseRepository;
         private bool disposed = false;
 

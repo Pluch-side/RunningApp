@@ -30,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\CourseProject\BO\BO\bin\Debug\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\CourseProject\BO\BO\bin\Debug\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,8 +46,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationUserBLL.cs" />
     <Compile Include="CourseBLL.cs" />
+    <Compile Include="HistoricUserCourseBLL.cs" />
+    <Compile Include="IBusiness.cs" />
+    <Compile Include="PointOfInterestBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegistrationBLL.cs" />
+    <Compile Include="RoleUserBLL.cs" />
+    <Compile Include="TypeCourseBLL.cs" />
+    <Compile Include="TypePOIBLL.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BO\Model.csproj">
+      <Project>{1d214e66-bdb0-45ea-8ceb-c77f81197411}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DAL\DataAccess.csproj">
+      <Project>{95bd3d8e-d096-435d-b0c4-cdf13028a957}</Project>
+      <Name>DataAccess</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

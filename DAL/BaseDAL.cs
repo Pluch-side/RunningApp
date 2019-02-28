@@ -12,12 +12,12 @@ namespace DAL
     public class BaseDAL<T> where T : class
     {
         private DbSet<T> _dbSet;
-        private BDD_RUNNINGEntities _context;
+        private DataEntities _context;
 
         /*
         * Initialize the context and the dbset
         */
-        public BaseDAL(BDD_RUNNINGEntities context)
+        public BaseDAL(DataEntities context)
         {
             this._context = context;
             this._dbSet = context.Set<T>();
@@ -45,7 +45,7 @@ namespace DAL
             //Adding join table property in the query
             foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                query = query.Include(includeProperties);
+                query = query.Include(includeProperty);
             }
 
             ret = query.ToList();
@@ -75,6 +75,7 @@ namespace DAL
         public virtual void Insert(T entity)
         {
             this._dbSet.Add(entity);
+            this._context.SaveChanges();
         }
 
         /*
@@ -93,6 +94,7 @@ namespace DAL
             if (this._context.Entry(entity).State == EntityState.Detached)
                 this._dbSet.Attach(entity);
             this._dbSet.Remove(entity);
+            this._context.SaveChanges();
         }
 
         /*
@@ -102,6 +104,7 @@ namespace DAL
         {
             this._dbSet.Attach(entity);
             this._context.Entry(entity).State = EntityState.Modified;
+            this._context.SaveChanges();
         }
     }
 }

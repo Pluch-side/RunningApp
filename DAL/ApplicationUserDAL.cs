@@ -10,7 +10,7 @@ namespace DAL
     public class ApplicationUserDAL : IDisposable
     {
         #region Extend BaseDAL
-        private BDD_RUNNINGEntities _context = new BDD_RUNNINGEntities();
+        private DataEntities _context = new DataEntities();
         private BaseDAL<ApplicationUser> applicationUserRepository;
         private bool disposed = false;
 
