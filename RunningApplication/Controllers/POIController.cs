@@ -25,37 +25,52 @@ namespace RunningApplication.Controllers
         }
 
         // GET: POI/Create
-        public ActionResult Create(int courseID, bool isOrder = false)
+        public ActionResult CreateOrUpdate(int courseID = 0, int poiID = 0)
         {
             var pois = this._business.GetByCourseID(courseID);
+            int orderPOI = 1;
+            if (pois.Count > 0)
+                orderPOI = pois.Max(item => item.OrderPOI) + 1;
+            PointOfInterest newPOI = new PointOfInterest() { OrderPOI = orderPOI };
+            if (poiID > 0)
+            {
+                newPOI = this._business.Get(poiID);
+                courseID = (int)newPOI.CourseID;
+            }
             var typesPOI = new TypePOIBLL().GetAll();
             ViewBag.pois = pois;
             ViewBag.typesPOI = typesPOI.ToList();
             ViewBag.courseID = courseID;
-            ViewBag.isOrder = isOrder;
-            return View();
+            int typeSelected = 1;
+            PointOfInterest poi = pois.Where(p => p.TypePOIID == 1).FirstOrDefault();
+            if (poi != null)
+            {
+                typeSelected = 3;
+            }
+            ViewBag.typeSelected = typeSelected;
+            return View(newPOI);
         }
 
         // POST: POI/Create
         [HttpPost]
-        public ActionResult Create(PointOfInterest poi)
+        public ActionResult CreateOrUpdate(PointOfInterest poi)
         {
             try
             {
-                bool isOrder = _business.GetByOrder(poi.OrderPOI).Count > 0;
-                ActionResult ret = RedirectToAction("Create", new { poi.CourseID, isOrder });
-
-                if (!isOrder)
+                if (poi.ID > 0)
                 {
-                    _business.Add(poi);
-                    ret = RedirectToAction("Create", new { poi.CourseID });
+                    this._business.Update(poi);
+                }
+                else
+                {
+                    this._business.Add(poi);
                 }
 
-                return ret;
+                return RedirectToAction("CreateOrUpdate", new { poi.CourseID }); ;
             }
-            catch
+            catch(Exception e)
             {
-                return RedirectToAction("Create", new { poi.CourseID });
+                return RedirectToAction("CreateOrUpdate", new { poi.CourseID });
             }
         }
 
@@ -84,23 +99,16 @@ namespace RunningApplication.Controllers
         // GET: POI/Delete/5
         public ActionResult Delete(int id)
         {
-            PointOfInterest poi = this._business.Get(id);
-            return View(poi);
-        }
-
-        // POST: POI/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, PointOfInterest poi)
-        {
             try
             {
+                PointOfInterest poi = this._business.Get(id);
                 int courseId = (int)this._business.Get(id).CourseID;
                 this._business.RemoveByID(id);
-                return RedirectToAction("Create", new { courseId });
+                return RedirectToAction("CreateOrUpdate", new { courseId });
             }
             catch
             {
-                return View();
+                return this.View();
             }
         }
     }

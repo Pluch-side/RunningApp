@@ -42,7 +42,7 @@ namespace RunningApplication.Controllers
             {
                 course.ApplicationUserID = 1;
                 this._courseBusiness.Add(course);
-                return RedirectToRoute("CreateRouteAddPosition", new { controller = "POI", action = "Create", courseID = course.ID });
+                return RedirectToRoute("CreateRouteAddPosition", new { controller = "POI", action = "CreateOrUpdate", courseID = course.ID });
             }
             catch
             {

@@ -15,8 +15,8 @@ namespace RunningApplication
 
             routes.MapRoute(
                 name: "CreateRouteAddPosition",
-                url: "add-point-of-interest/{courseID}",
-                defaults: new { controller = "POI", action = "Create" }
+                url: "add-point-of-interest/{courseID}/{poiID}",
+                defaults: new { controller = "POI", action = "CreateOrUpdate", poiID = UrlParameter.Optional }
             );
 
             routes.MapRoute(

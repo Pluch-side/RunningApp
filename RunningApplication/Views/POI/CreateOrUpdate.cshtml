@@ -6,7 +6,7 @@
     List<TypePOI> listTypesPOI = ViewBag.typesPOI;
     List<PointOfInterest> listPOIs = ViewBag.pois;
     int courseID = ViewBag.courseID;
-    bool isOrder = ViewBag.isOrder;
+    int typeSelected = ViewBag.typeSelected;
 }
 
 <h2>Add all Point of interest of your course</h2>
@@ -18,21 +18,34 @@
     <div class="col-md-6">
         <div id='mapid' style='height: 320px; width: auto;'></div>
         <script>
+            var poiID = @Model.ID;
+            @if(Model.Latitude != null && Model.Longitude != null)
+            {
+                var poiLat = @Model.Latitude;
+                var poiLng = @Model.Longitude;
+            }
+            var popupMarker = null;
             function onMapClick(e) {
+                if(poiID > 0){
+                    mymap.eachLayer(function(layer){
+                        if(layer.options.title == "markerSelected"){
+                            layer.remove(mymap);
+                        }
+                    });
+                }
                 $("#latitude").val(e.latlng.lat);
-                $("#longitude").val(e.latlng.lng)
-                //var marker = L.marker([e.latlng.lat, e.latlng.ln]).addTo(mymap);
-                //popup
-                //    .setLatLng(e.latlng)
-                //    .setContent("You clicked the map at " + e.latlng.toString())
-                //   .openOn(mymap);
-                //marker.remove(mymap);
+                $("#longitude").val(e.latlng.lng);
+                if (popupMarker != null)
+                {
+                    popupMarker.remove(mymap);
+                }
+                popupMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(mymap);
             }
 
             var points = [
                 @foreach(var p in listPOIs)
                 {
-                    @:['@p.TypePOI.ID', '@p.Latitude.ToString()', '@p.Longitude.ToString()'],
+                    @:['@p.TypePOI.ID', '@p.Latitude.ToString()', '@p.Longitude.ToString()', '@p.ID'],
                 }];
 
             var traits = [
@@ -42,38 +55,53 @@
                 }
             ]
             if (points.length > 0) {
-                var mymap = L.map('mapid').setView([parseFloat(points[0][1]), parseFloat(points[0][2])], 13);
+                var mymap = L.map('mapid').setView([parseFloat(points[0][1]), parseFloat(points[0][2])], 6);
             } else {
                 var mymap = L.map('mapid').setView([46.227638, 2.352926], 5);
             }
-            
+
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
                 maxZoom: 18,
                 id: 'mapbox.streets',
                 accessToken: 'pk.eyJ1IjoiYXhlbGxlZmV2cmUxNCIsImEiOiJjanMzMmQ5ZDYwczZ4NDNrdmlxOXI5cnJwIn0.R9GWUwTVAZuQJEmfd3PzNA'
             }).addTo(mymap);
 
-            var countCP = 1;
-            var countSZ = 1;
-            for (var i = 0; i < points.length; i++) {
-                var marker = L.marker([parseFloat(points[i][1]), parseFloat(points[i][2])]).addTo(mymap);
-                if (points[i][0] == 1) {
-                    marker.bindPopup("<b>Start</b>").openPopup();
-                } else if (points[i][0] == 2) {
-                    marker.bindPopup("<b>End</b>").openPopup();
-                } else if (points[i][0] == 3) {
-                    marker.bindPopup("<b>Checkpoint n° </b> " + countCP).openPopup();
-                    countCP++;
-                } else if (points[i][0] == 4) {
-                    marker.bindPopup("<b>Supply zone n° </b> " + countSZ).openPopup();
-                    countSZ++;
+            if (points.length > 0) {
+                var markerSelected = null;
+                var messageSelected = "";
+                var countCP = 1;
+                var countSZ = 1;
+                for (var i = 0; i < points.length; i++) {
+                    var marker = L.marker([parseFloat(points[i][1]), parseFloat(points[i][2])]).addTo(mymap);
+                    var message = "";
+                    if (points[i][0] == 1) {
+                        message = "<b>Start</b>";
+                        marker.bindPopup(message).openPopup();
+                    } else if (points[i][0] == 2) {
+                        message = "<b>End</b>";
+                        marker.bindPopup("<b>End</b>").openPopup();
+                    } else if (points[i][0] == 3) {
+                        message = "<b>Checkpoint n° </b> " + countCP;
+                        marker.bindPopup(message).openPopup();
+                        countCP++;
+                    } else if (points[i][0] == 4) {
+                        message = "<b>Supply zone n° </b> " + countSZ;
+                        marker.bindPopup(message).openPopup();
+                        countSZ++;
+                    }
+                    if(points[i][3] == poiID){
+                        markerSelected = marker;
+                        markerSelected.options.title = "markerSelected";
+                    }
                 }
+
+                if(poiID > 0){
+                    markerSelected.bindPopup(messageSelected).openPopup();
+                }
+
+                var polyline = L.polyline([traits], { color: '#4285f4' }).addTo(mymap);
+                mymap.fitBounds(polyline.getBounds());
             }
-
-            var polyline = L.polyline([traits], { color: '#4285f4' }).addTo(mymap);
-            mymap.fitBounds(polyline.getBounds());
-
-            var popup = L.popup();
 
             mymap.on('click', onMapClick);
         </script>
@@ -82,6 +110,8 @@
         @using (Html.BeginForm())
             {
             @Html.AntiForgeryToken()
+
+            @Html.Hidden("ID", Model.ID)
 
             <div class="form-horizontal">
                 <hr />
@@ -94,10 +124,6 @@
                     </div>
                 </div>
 
-                @if (isOrder)
-                {
-                    <p class="danger">This order is already used</p>
-                }
                 <div class="form-group">
                     @Html.LabelFor(model => model.OrderPOI, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
@@ -127,14 +153,22 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.TypePOIID, "TypePOIID", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.DropDownListFor(model => model.TypePOIID, listTypesPOI.Select(item => new SelectListItem() { Text = item.Label, Value = item.ID.ToString() }), htmlAttributes: new { @class = "form-control" })
+                        @Html.DropDownListFor(model => model.TypePOIID, listTypesPOI.Select(item => new SelectListItem() { Text = item.Label, Value = item.ID.ToString(), Selected = (typeSelected == item.ID), Disabled = (item.ID == 1 && typeSelected != 1) }), htmlAttributes: new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.TypePOIID, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Create" class="btn btn-default" />
+                        @if (Model.ID > 0)
+                        {
+                            <input type="submit" value="Edit" class="btn btn-default" />
+                        }
+                        else
+                        {
+                            <input type="submit" value="Create" class="btn btn-default" />
+                        }
+
                     </div>
                 </div>
             </div>
@@ -182,8 +216,7 @@
                     @Html.DisplayFor(modelItem => item.TypePOI.Label)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                    @Html.ActionLink("Edit", "CreateOrUpdate", new { poiId = item.ID }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.ID })
                 </td>
             </tr>
